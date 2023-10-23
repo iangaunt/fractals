@@ -9,7 +9,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgb(75, 105, 227);
   height: 100vh;
   overflow: hidden;
+  position: absolute;
   width: 100vw;
 }/*# sourceMappingURL=style.css.map */
