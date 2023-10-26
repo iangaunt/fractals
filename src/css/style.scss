@@ -6,6 +6,8 @@
     align-items: center;
 }
 
+$blue: rgb(75, 105, 227);
+
 * {
     margin: 0;
     padding: 0;
@@ -14,7 +16,7 @@
 
 body {
     @include flex;
-    background: rgb(75, 105, 227);
+    background: $blue;
     height: 100vh;
     overflow: hidden;
     position: absolute;

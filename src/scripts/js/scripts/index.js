@@ -21,17 +21,25 @@ var Complex = /** @class */ (function () {
         this.real = realP;
         this.im = imP;
     };
-    Complex.prototype.greaterThan = function (other) {
-        return other.real == this.real ? (Math.abs(this.im) >= Math.abs(other.im)) : (Math.abs(this.real) >= Math.abs(other.real));
-    };
     return Complex;
 }());
-function testForDivergence(z, c, n) {
+function testForMandelbrot(z, c, n) {
     for (var i = 0; i < n; i++) {
         z.multiply(z);
         z.add(c);
-        if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= Math.pow(threshold, 2))
+        if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= threshold)
             return true;
+    }
+    return false;
+}
+function testForBurningShip(z, c, n) {
+    for (var i = 0; i < n; i++) {
+        var zc = new Complex(Math.abs(z.real), Math.abs(z.im));
+        zc.multiply(zc);
+        zc.add(c);
+        if (Math.pow(zc.real, 2) + Math.pow(zc.im, 2) >= threshold)
+            return true;
+        z = zc;
     }
     return false;
 }
@@ -40,24 +48,31 @@ function setPixel(x, y) {
 }
 function generateMandelbrot(n) {
     for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height / 2 + 1; y++) {
+            var xc = (x - width / 2) / 380 - 0.5;
+            var yc = (y - height / 2) / 380;
+            if (!testForMandelbrot(new Complex(0, 0), new Complex(xc, yc), n)) {
+                setPixel(x, y);
+                if (y != height / 2) {
+                    setPixel(x, height - y);
+                }
+            }
+        }
+    }
+}
+function generateBurningShip(n) {
+    for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
-            var xc = (x - width / 2) / 300 - 0.5;
-            var yc = (y - height / 2) / 300 - 0.125;
-            if (!testForDivergence(new Complex(0, 0), new Complex(xc, yc), n)) {
+            var xc = (x - width / 2) / 380 - 0.5;
+            var yc = (y - height / 2) / 380 - 0.6;
+            if (!testForBurningShip(new Complex(0, 0), new Complex(xc, yc), n)) {
                 setPixel(x, y);
             }
         }
     }
 }
-var lower = 7;
-var upper = 50;
-var n = lower + 1;
-var mod = 1;
-setInterval(function () {
-    ctx.clearRect(0, 0, width, height);
-    generateMandelbrot(n);
-    n += mod;
-    console.log(n);
-    if (n == lower || n == upper)
-        mod *= -1;
-}, 250);
+var date = Date.now();
+ctx.clearRect(0, 0, width, height);
+// generateMandelbrot(50)
+generateBurningShip(50);
+console.log(Date.now() - date);

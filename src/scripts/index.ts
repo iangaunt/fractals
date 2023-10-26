@@ -30,18 +30,31 @@ class Complex {
         this.real = realP;
         this.im = imP;
     }
-
-    greaterThan(other: Complex): boolean {
-        return other.real == this.real ? (Math.abs(this.im) >= Math.abs(other.im)) : (Math.abs(this.real) >= Math.abs(other.real)); 
-    }
 }
 
-function testForDivergence(z: Complex, c: Complex, n: number): boolean {
+function testForMandelbrot(z: Complex, c: Complex, n: number): boolean {
     for (let i = 0; i < n; i++) {
         z.multiply(z);
         z.add(c);
 
-        if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= Math.pow(threshold, 2)) return true;
+        if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= threshold) return true;
+    }
+
+    return false;
+}
+
+function testForBurningShip(z: Complex, c: Complex, n: number): boolean {
+    for (let i = 0; i < n; i++) {
+        const zc = new Complex(
+            Math.abs(z.real),
+            Math.abs(z.im)
+        );
+
+        zc.multiply(zc);
+        zc.add(c);
+
+        if (Math.pow(zc.real, 2) + Math.pow(zc.im, 2) >= threshold) return true;
+        z = zc;
     }
 
     return false;
@@ -53,11 +66,31 @@ function setPixel(x: number, y: number) {
 
 function generateMandelbrot(n: number) {
     for (let x = 0; x < width; x++) {
-        for (let y = 0; y < height; y++) {
-            let xc = (x - width / 2) / 300 - 0.5;
-            let yc = (y - height / 2) / 300 - 0.125;
+        for (let y = 0; y < height / 2 + 1; y++) {
+            const xc = (x - width / 2) / 380 - 0.5;
+            const yc = (y - height / 2) / 380;
     
-            if (!testForDivergence(
+            if (!testForMandelbrot(
+                new Complex(0, 0),
+                new Complex(xc, yc),
+                n
+            )) {
+                setPixel(x, y);
+                if (y != height / 2) {
+                    setPixel(x, height - y);
+                }
+            }
+        }
+    }
+}
+
+function generateBurningShip(n: number) {
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            const xc = (x - width / 2) / 380 - 0.5;
+            const yc = (y - height / 2) / 380 - 0.6;
+
+            if (!testForBurningShip(
                 new Complex(0, 0),
                 new Complex(xc, yc),
                 n
@@ -67,18 +100,10 @@ function generateMandelbrot(n: number) {
         }
     }
 }
-const lower: number = 7;
-const upper: number = 50;
 
-let n = lower + 1;
-let mod: number = 1;
+const date = Date.now();
 
-setInterval(function() {
-    ctx.clearRect(0, 0, width, height);
-    generateMandelbrot(n); 
-    n += mod;
-
-    console.log(n);
-
-    if (n == lower || n == upper) mod *= -1;
-}, 250);
+ctx.clearRect(0, 0, width, height);
+// generateMandelbrot(50)
+generateBurningShip(50);
+console.log(Date.now() - date);
