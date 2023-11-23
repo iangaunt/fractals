@@ -4,7 +4,7 @@ ctx.imageSmoothingEnabled = false;
 ctx.fillStyle = "white";
 var height = mandelbrot.offsetHeight;
 var width = mandelbrot.offsetWidth;
-var threshold = Math.pow(100000, 2);
+var threshold = 4;
 /** Class for handling operations with complex numbers in the format `x + yi`. */
 var Complex = /** @class */ (function () {
     function Complex(real, im) {
@@ -28,9 +28,9 @@ function testForMandelbrot(z, c, n) {
         z.multiply(z);
         z.add(c);
         if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= threshold)
-            return true;
+            return i;
     }
-    return false;
+    return n;
 }
 function testForBurningShip(z, c, n) {
     for (var i = 0; i < n; i++) {
@@ -38,25 +38,23 @@ function testForBurningShip(z, c, n) {
         zc.multiply(zc);
         zc.add(c);
         if (Math.pow(zc.real, 2) + Math.pow(zc.im, 2) >= threshold)
-            return true;
+            return i;
         z = zc;
     }
-    return false;
+    return n;
 }
 function setPixel(x, y) {
     ctx.fillRect(x, y, 1, 1);
 }
 function generateMandelbrot(n) {
     for (var x = 0; x < width; x++) {
-        for (var y = 0; y < height / 2 + 1; y++) {
+        for (var y = 0; y < height; y++) {
             var xc = (x - width / 2) / 380 - 0.5;
             var yc = (y - height / 2) / 380;
-            if (!testForMandelbrot(new Complex(0, 0), new Complex(xc, yc), n)) {
-                setPixel(x, y);
-                if (y != height / 2) {
-                    setPixel(x, height - y);
-                }
-            }
+            var iter = testForMandelbrot(new Complex(0, 0), new Complex(xc, yc), n);
+            var r = 1 - iter / n;
+            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            setPixel(x, y);
         }
     }
 }
@@ -65,14 +63,12 @@ function generateBurningShip(n) {
         for (var y = 0; y < height; y++) {
             var xc = (x - width / 2) / 380 - 0.5;
             var yc = (y - height / 2) / 380 - 0.6;
-            if (!testForBurningShip(new Complex(0, 0), new Complex(xc, yc), n)) {
-                setPixel(x, y);
-            }
+            var iter = testForBurningShip(new Complex(0, 0), new Complex(xc, yc), n);
+            var r = 1 - iter / n;
+            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            setPixel(x, y);
         }
     }
 }
 var date = Date.now();
-ctx.clearRect(0, 0, width, height);
-// generateMandelbrot(50)
-generateBurningShip(50);
-console.log(Date.now() - date);
+generateMandelbrot(50);

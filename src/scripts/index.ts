@@ -6,7 +6,7 @@ ctx.fillStyle = "white";
 const height = mandelbrot.offsetHeight;
 const width = mandelbrot.offsetWidth;
 
-const threshold = Math.pow(100000, 2);
+const threshold = 4;
 
 /** Class for handling operations with complex numbers in the format `x + yi`. */
 class Complex {
@@ -32,18 +32,18 @@ class Complex {
     }
 }
 
-function testForMandelbrot(z: Complex, c: Complex, n: number): boolean {
+function testForMandelbrot(z: Complex, c: Complex, n: number): number {
     for (let i = 0; i < n; i++) {
         z.multiply(z);
         z.add(c);
 
-        if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= threshold) return true;
+        if (Math.pow(z.real, 2) + Math.pow(z.im, 2) >= threshold) return i;
     }
 
-    return false;
+    return n;
 }
 
-function testForBurningShip(z: Complex, c: Complex, n: number): boolean {
+function testForBurningShip(z: Complex, c: Complex, n: number): number {
     for (let i = 0; i < n; i++) {
         const zc = new Complex(
             Math.abs(z.real),
@@ -53,11 +53,11 @@ function testForBurningShip(z: Complex, c: Complex, n: number): boolean {
         zc.multiply(zc);
         zc.add(c);
 
-        if (Math.pow(zc.real, 2) + Math.pow(zc.im, 2) >= threshold) return true;
+        if (Math.pow(zc.real, 2) + Math.pow(zc.im, 2) >= threshold) return i;
         z = zc;
     }
 
-    return false;
+    return n;
 }
 
 function setPixel(x: number, y: number) {
@@ -66,20 +66,20 @@ function setPixel(x: number, y: number) {
 
 function generateMandelbrot(n: number) {
     for (let x = 0; x < width; x++) {
-        for (let y = 0; y < height / 2 + 1; y++) {
+        for (let y = 0; y < height; y++) {
             const xc = (x - width / 2) / 380 - 0.5;
             const yc = (y - height / 2) / 380;
     
-            if (!testForMandelbrot(
+            let iter = testForMandelbrot(
                 new Complex(0, 0),
                 new Complex(xc, yc),
                 n
-            )) {
-                setPixel(x, y);
-                if (y != height / 2) {
-                    setPixel(x, height - y);
-                }
-            }
+            );
+            let r = 1 - iter / n;
+
+            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+
+            setPixel(x, y);
         }
     }
 }
@@ -90,20 +90,20 @@ function generateBurningShip(n: number) {
             const xc = (x - width / 2) / 380 - 0.5;
             const yc = (y - height / 2) / 380 - 0.6;
 
-            if (!testForBurningShip(
+            let iter = testForBurningShip(
                 new Complex(0, 0),
                 new Complex(xc, yc),
                 n
-            )) {
-                setPixel(x, y);
-            }
+            );
+            let r = 1 - iter / n;
+
+            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+
+            setPixel(x, y);
         }
     }
 }
 
-const date = Date.now();
 
-ctx.clearRect(0, 0, width, height);
-// generateMandelbrot(50)
-generateBurningShip(50);
-console.log(Date.now() - date);
+const date = Date.now();
+generateMandelbrot(50)
