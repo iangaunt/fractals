@@ -52,8 +52,13 @@ function generateMandelbrot(n) {
             var xc = (x - width / 2) / 380 - 0.5;
             var yc = (y - height / 2) / 380;
             var iter = testForMandelbrot(new Complex(0, 0), new Complex(xc, yc), n);
-            var r = 1 - iter / n;
-            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            var r = 1 + iter / n;
+            if (iter == n) {
+                ctx.fillStyle = "rgb(0, 0, 0)";
+            }
+            else {
+                ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            }
             setPixel(x, y);
         }
     }
@@ -62,13 +67,18 @@ function generateBurningShip(n) {
     for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
             var xc = (x - width / 2) / 380 - 0.5;
-            var yc = (y - height / 2) / 380 - 0.6;
+            var yc = (y - height / 2) / 380 - 0.5;
             var iter = testForBurningShip(new Complex(0, 0), new Complex(xc, yc), n);
-            var r = 1 - iter / n;
-            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            var r = 1 + iter / n;
+            if (iter == n) {
+                ctx.fillStyle = "rgb(0, 0, 0)";
+            }
+            else {
+                ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            }
             setPixel(x, y);
         }
     }
 }
 var date = Date.now();
-generateMandelbrot(50);
+generateBurningShip(20);

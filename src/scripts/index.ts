@@ -75,9 +75,13 @@ function generateMandelbrot(n: number) {
                 new Complex(xc, yc),
                 n
             );
-            let r = 1 - iter / n;
-
-            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            let r = 1 + iter / n;
+            
+            if (iter == n) {
+                ctx.fillStyle = "rgb(0, 0, 0)";
+            } else {
+                ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            }
 
             setPixel(x, y);
         }
@@ -88,16 +92,20 @@ function generateBurningShip(n: number) {
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
             const xc = (x - width / 2) / 380 - 0.5;
-            const yc = (y - height / 2) / 380 - 0.6;
-
+            const yc = (y - height / 2) / 380 - 0.5;
+    
             let iter = testForBurningShip(
                 new Complex(0, 0),
                 new Complex(xc, yc),
                 n
             );
-            let r = 1 - iter / n;
-
-            ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            let r = 1 + iter / n;
+            
+            if (iter == n) {
+                ctx.fillStyle = "rgb(0, 0, 0)";
+            } else {
+                ctx.fillStyle = "rgb(" + Math.round(75 * r) + ", " + Math.round(105 * r) + ", " + Math.round(227 * r) + ")";
+            }
 
             setPixel(x, y);
         }
@@ -106,4 +114,4 @@ function generateBurningShip(n: number) {
 
 
 const date = Date.now();
-generateMandelbrot(50)
+generateBurningShip(20)
